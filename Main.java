@@ -1,32 +1,65 @@
-import java.io.*; 
-import java.net.Socket;
+import java.net.*; 
+import java.io.*;
+
 public class Main {
-    public static void main(String[] args) {
-        Socket connexion = null;
-        try {
-            connexion = new Socket("www.univ-paris13.fr",80);
-            Writer output = new OutputStreamWriter(
-            connexion.getOutputStream(), "8859_1");
-            output.write("GET / HTTP 1.0\r\n\r\n"); 
-            output.flush();
-            connexion.shutdownOutput();
-            // fermeture partielle
-            BufferedReader input =
-            new BufferedReader(new InputStreamReader(connexion.getInputStream(),"8859_1"),1024);
-            // flux en lecture
-            StringBuffer sb = new StringBuffer(); 
-            int c;
-            while ((c = input.read()) != -1) 
-                sb.append((char) c);
-            System.out.println(sb);
-        } catch (IOException e) {
-            System.out.println(e);
+    private ServerSocket serverSocket;
+    private Socket socket;
+    
+    public Main(int port) {
+        try { 
+            serverSocket = new ServerSocket(port, 1);
         }
-        finally {
-            try {
-                if (connexion != null) connexion.close();
-            } catch (IOException e) {
+            // creation du serveur
+        catch (IOException e) {
+            //e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        // erreur de création
+    }
+    public static void main(String[] args) {
+        int port;
+        try {
+            port = Integer.parseInt(args[0]);
+        }
+        catch (Exception e) {
+            port = 0;
+        } // donc valeur au hasard
+        Main ct = new Main(port);
+        System.out.println(port);
+        ct.clientMgr();
+    }
+
+    public void clientMgr() {
+        while (true) {
+            // écoute
+            try { 
+                Socket socket = serverSocket.accept();
+                Thread inputThread = new InputThread(socket.getInputStream());
+                inputThread.start();
+                // thread pour lecture
+                Thread outputThread = new OutputThread(socket.getOutputStream());
+                outputThread.start();
+                // thread pour écriture
+                try { 
+                    inputThread.join();
+                    outputThread.join();
+                } //attente de fin R/W
+                catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+                // interruption de thread
+                
+            }catch (IOException e) {
                 System.out.println(e);
+                System.out.println(e.getMessage());
+            }
+            finally {
+                try { 
+                    if (socket != null) 
+                        socket.close();
+                }catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
             }
         }
     }
