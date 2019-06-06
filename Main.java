@@ -4,10 +4,12 @@ public class Main {
     public static void main(String[] args) {
         Socket connexion = null;
         try {
-            connexion = new Socket("www.univ-paris13.fr",80);
+            connexion = new Socket("www.google.fr",80);
             Writer output = new OutputStreamWriter(
             connexion.getOutputStream(), "8859_1");
-            output.write("GET / HTTP 1.0\r\n\r\n"); 
+            String  req = "GET /search?q=DEFITECH HTTP/1.1\r\n\r\n";
+
+            output.write(req); 
             output.flush();
             connexion.shutdownOutput();
             // fermeture partielle
@@ -19,6 +21,7 @@ public class Main {
             while ((c = input.read()) != -1) 
                 sb.append((char) c);
             System.out.println(sb);
+            //Browser browser = new Browser("fr.wikipedia.org", sb.toString());  
         } catch (IOException e) {
             System.out.println(e);
         }
