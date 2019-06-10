@@ -16,7 +16,7 @@ public class Main {
         }
         // erreur de création
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int port;
         try {
             port = Integer.parseInt(args[0]);
@@ -29,13 +29,37 @@ public class Main {
         ct.clientMgr();
     }
 
-    public void clientMgr() {
+    public void clientMgr() throws IOException {
         while (true) {
-            // écoute
+            Socket socket = serverSocket.accept();
+
+            try{
+                
+                new Thread(new ThreadForClient(socket)).start();
+            }
+            catch(Exception e){
+                System.out.println(":( client");
+            }
+        }
+    }
+    
+    public class ThreadForClient implements Runnable{
+    
+    Socket socket;
+    ThreadForClient(Socket socket){
+        this.socket = socket;
+    }
+    
+    @Override
+    public void run(){
+        
+        // écoute
             try { 
-                Socket socket = serverSocket.accept();
+                
                 Thread inputThread = new InputThread(socket.getInputStream());
                 inputThread.start();
+                   
+                   
                 // thread pour lecture
                 Thread outputThread = new OutputThread(socket.getOutputStream());
                 outputThread.start();
@@ -63,4 +87,8 @@ public class Main {
             }
         }
     }
-}
+
+
+            
+ }
+
