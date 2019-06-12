@@ -25,7 +25,7 @@ public class Main {
             port = 0;
         } // donc valeur au hasard
         Main ct = new Main(port);
-        System.out.println(port);
+        System.out.println("Serveur mis à l'écoute sur le port " + port);
         ct.clientMgr();
     }
 
@@ -45,13 +45,13 @@ public class Main {
     
     public class ThreadForClient implements Runnable{
     
-    Socket socket;
-    ThreadForClient(Socket socket){
-        this.socket = socket;
-    }
-    
-    @Override
-    public void run(){
+        Socket socket;
+        ThreadForClient(Socket socket){
+            this.socket = socket;
+        }
+        
+        @Override
+        public void run(){
         
         // écoute
             try { 

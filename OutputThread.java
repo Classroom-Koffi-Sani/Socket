@@ -11,8 +11,11 @@ class OutputThread extends Thread {
         String ligne;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         try {
+            out.write("Bonjour client");
+            System.out.println("Lecture depuis OutputThread");
             while (true) {
-                ligne = in.readLine();
+                ligne ="Reponse"; //in.readLine();
+                System.out.println(" Vous avez saisi : " + ligne);
                 if (ligne.equals(".")) 
                     break;
                 out.write(ligne + "\r\n");
